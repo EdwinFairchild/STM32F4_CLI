@@ -26,6 +26,7 @@
 char DELIMETER = '\r';
 char DELIMETER1 = '\n';
 char DELIMETER2 = 10;
+char BACKSPACE = 127;
 #define MESSAGE_MAX 50
 
 //-------------------| Global variables |---------------------------
@@ -43,7 +44,7 @@ void blink(uint8_t times, uint16_t delay);
 
 typedef struct  {
 	const char *command;
-	int(*handler)(int argc, char *argv[]);
+	cmd_handler handler;
 	const char *help;
 } cliCMD_init;
 
@@ -61,7 +62,7 @@ void cmd_test_var_handler(uint8_t num, char *values[]);
 void cmd_ledOn_handler(uint8_t num, char *values[]);
 void cmd_ledOff_handler(uint8_t num, char *values[]);
 void cmd_ledBlink_handler(uint8_t num, char *values[]);
-
+void cmd_getreg_handler(uint8_t num, char *values[]);
 //this array of function pointers will hold pointers to all the handler functions
 int(*command_Handlers[NUM_OF_COMMANDS])(int argc, char *argv[]);
 
@@ -76,16 +77,27 @@ int main(void)
 	//CL_printMsg_init_Default(false);
 	initLed();
 	uart_init_full_duplex();
-	CL_printMsg("hello world");
-	registerCommand("exit", ' ', cmd_exit_handler);
-	registerCommand("ok", ' ', cmd_ok_handler);
-	registerCommand("add", '+', cmd_add_handler);
-	registerCommand("sub", '-', cmd_sub_handler);
-	registerCommand("modx", ' ', cmd_test_var_handler);
-	registerCommand("ledOn", ' ', cmd_ledOn_handler);
-	registerCommand("ledOff", ' ', cmd_ledOff_handler);
-	registerCommand("ledBlink", ';', cmd_ledBlink_handler);
+	CL_printMsg("------Cli init-----\r\n");
 	
+//	newCommand myCommands[10]; 
+//	myCommands[0].command = "ok";
+//	myCommands[0].cmdHandler = cmd_ok_handler;
+//	myCommands[0].help		= "\r\nResturns ok if everything is ok\r\n";
+//	
+//	myCommands[1].command = "ok";
+//	myCommands[1].cmdHandler = cmd_ok_handler;
+//	myCommands[1].help		= "\r\nResturns ok if everything is ok\r\n";
+	
+	
+	registerCommand("exit", ' ', cmd_exit_handler, "Exits the cli\r\n");
+	registerCommand("ok", ' ', cmd_ok_handler, "Prints \"ok\" if cli is ok");
+	registerCommand("add", '+', cmd_add_handler, "Add numbers with a + delimeter");
+	registerCommand("sub", '-', cmd_sub_handler, "Subtracts numbers with a - delimeter");
+	registerCommand("modx", ' ', cmd_test_var_handler, "Under construction");
+	registerCommand("ledOn", ' ', cmd_ledOn_handler, "Turns on user LED");
+	registerCommand("ledOff", ' ', cmd_ledOff_handler, "Turns of user LED");
+	registerCommand("ledBlink", ';', cmd_ledBlink_handler, "Blinks user led x times with y delay\r\nusing the following format : ledBlink xy");
+	registerCommand("getReg", ';' , cmd_getreg_handler, "Returns the value of a given register\n\r[Format] getreg GPIOA;hex or (bin)(dec)");
 	
 	
 	
@@ -112,35 +124,7 @@ int main(void)
 	}
 	
 	
-	//an array of command structures to declar all supporting commands
-//	cliCMD_init cmd[] = 
-//	{
-//		{ //this declares a command, handler function and help message
-//			cmd->command = "ruok" ,
-//			cmd->handler = cliCMD_ok_handler ,
-//			cmd->help	   = "Prints ok if cli is ok\n" ,
-//		},
-//		
-//		{
-//			cmd->command = "stats",
-//			cmd->handler = cliCMD_stas_handler,
-//			cmd->help	   = "Prints stats of serial connection\n"
-//		}
-//	
-//	};
-//	registerCommnds(NUM_OF_COMMANDS, &cmd[0]);
-//
-//	for (;;)
-//	{
-//		if (parsingPending == true)
-//		{
-//			parseMsg();
-//		} 
-//		
-//		
-//		
-//
-//	}
+
 }//------------------------------------------------------------------
 void initLed(void)
 {	
@@ -211,9 +195,10 @@ void USART1_IRQHandler(void)
 		
 		
 		//*******optional**********************/
-		//send the char back to look like a real terminal
+		//send the char back to look like a real terminal (putty compatibility)
 		if(received != DELIMETER || received !=  DELIMETER1 ) 
 			USART1->DR = received;
+		//CL_printMsg("%d", received);
 		
 		
 		/*	If parsingPending is already true then it means a message is still
@@ -246,6 +231,14 @@ void USART1_IRQHandler(void)
 				
 				
 			}	
+			else if(received == BACKSPACE)
+			{
+				if (ptrCount > 0)
+				{
+					ptrCount--;
+					cliMsg[ptrCount] = NULL; 
+				}
+			}
 			
 			/*	if we have NOT reached the delimiter then increment the pointer and pointer counter
 			 *	so the next byte is stored at the next location hence assembling the message\
@@ -266,26 +259,6 @@ void USART1_IRQHandler(void)
 	
 	
 }//----------------------------------------------------------------
-//void parseMsg(void)
-//{
-//	
-//	
-////	//lets parse the message
-////	char test[] = "ok";
-////	
-////	char *temp = strtok(cliMsg, (const char)(DELIMETER));
-////			
-////	//CL_printMsg("\n temp = %s : test = %s\n", temp , test);
-////	if(strcmp(*temp, *test) == 0)
-////	{
-////		CL_printMsg("\n::>System Ok!");
-////	}
-//		
-//		
-//	
-//			
-//	parsingPending = false; 
-//}//----------------------------------------------------------------
 void cmd_exit_handler(uint8_t num, char *values[])
 {
 	CL_printMsg("..................| End CLI |..................\n\n");
@@ -373,4 +346,8 @@ void cmd_ledBlink_handler(uint8_t num, char *values[])
 	CL_printMsg("\r\n");
 
 
+}
+void cmd_getreg_handler(uint8_t num, char *values[])
+{
+	
 }
