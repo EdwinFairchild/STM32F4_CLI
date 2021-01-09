@@ -23,32 +23,22 @@
 #include "CL_bfp.h"
 
 //-------------------| Defines |------------------------------------
-char DELIMETER = '\r';
-char DELIMETER1 = '\n';
-char DELIMETER2 = 10;
-char BACKSPACE = 127;
-#define MESSAGE_MAX 50
+
 
 //-------------------| Global variables |---------------------------
-char cliMsg[MESSAGE_MAX]; //cli commands will be stored here
-char *cliMsgPtr = &cliMsg[0]; //used as a pointer to cli commands 
-uint8_t ptrCount = 0;  //counter to make sure pointer doesnt exceed cliMsg max
-bool parsingPending  = false; 
+//char cli.cliMsg[MESSAGE_MAX]; //cli commands will be stored here
+
+//uint8_t cli.msgPtr = 0;  //counter to make sure pointer doesnt exceed cli.cliMsg max
+//bool cli.parsePending  = false; 
 //-------------------| Prototypes |---------------------------------
 void initLed(void);
 void blink(uint8_t times, uint16_t delay);
 
 
 //-------------------| cli stuff  |---------------------------------
-#define NUM_OF_COMMANDS 2
-
-typedef struct  {
-	const char *command;
-	cmd_handler handler;
-	const char *help;
-} cliCMD_init;
 
 
+CL_cli_type cli;
 void uart_init_full_duplex(void);
 
 
@@ -77,9 +67,10 @@ int main(void)
 
 	
 	
-	CL_cli_init();
-
+	CL_cli_init(&cli);
 	cli.prompt = "eddie>";
+	cli.delimeter = '\r';
+
 
 
 	cli.registerCommand("ok", ' ', cmd_ok_handler, "Prints \"ok\" if cli is ok");
@@ -88,29 +79,19 @@ int main(void)
 	cli.registerCommand("modx", ' ', cmd_test_var_handler, "Under construction");
 	cli.registerCommand("ledOn", ' ', cmd_ledOn_handler, "Turns on user LED");
 	cli.registerCommand("ledOff", ' ', cmd_ledOff_handler, "Turns of user LED");
-	cli.registerCommand("ledBlink", ';', cmd_ledBlink_handler, "Blinks user led x times with y delay\r\nusing the following format : ledBlink xy");
+	cli.registerCommand("ledBlink", ';', cmd_ledBlink_handler, "Blinks user led x times with y delay\r\nusing the following format : ledBlink x;y");
 	cli.registerCommand("getReg", ';', cmd_getreg_handler, "Returns the value of a given register\n\r[Format] getreg GPIOA;hex or (bin)(dec)");
 	
-	
-	
-	
-	
-	
-	
-	
-	//blink(3, 100);
-	DWT->CYCCNT = 0;
-	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+
 	while (1)
 	{
 	
 		
-		if (parsingPending == true)
+		if (cli.parsePending == true)
 		{
 		
-			parseCMD(cliMsg);
-			parsingPending = false;
-			CL_printMsg("----------\r\neddie@home[%ds]> ", DWT->CYCCNT / 180000000);
+			parseCMD(&cli);
+		//	CL_printMsg("%s", cli.prompt);
 		}
 
        
@@ -184,75 +165,13 @@ void USART1_IRQHandler(void)
 		USART1->SR &= ~(USART_SR_RXNE);//clear interrupt
 		
 		//fetch data
-		char received = USART1->DR;
-		
+		cli.charReceived = USART1->DR;
 
-
-		cli.charReceived = true;
-		//--------------------------------------------------------------------------------externalize
-		//*******optional**********************/
-		//send the char back to look like a real terminal (putty compatibility)
-		if(received != DELIMETER || received !=  DELIMETER1 ) 
-		USART1->DR = received;
-		//CL_printMsg("%d", received);
-		
-		
-		
-		/*	If parsingPending is already true then it means a message is still
-		 *	parsing , this current data will be ginored */
-		if(parsingPending == false) 
-		{
-			/*
-				 *	if the delimeter has been reached: 
-				 *		--stop assembling the message 
-				 *		--reset the cli pointer to point back to 
-				 *		  beggining of cliMsg 
-				 *		--reset the pointer counter 
-				 *		--set message received to true 
-				 *	
-				 */
-			//if (*cliMsgPtr == DELIMETER ) 
-			if (received == DELIMETER ) 
-			{	
-				
-			
-				
-			
-				//cliMsgPtr = &cliMsg[0] ;   //point the temp pointer  back to start
-				ptrCount = 0;  //reset temp pointer countr
-				
-				//this flag is used to let the application know we have a command to parse
-				//do not parse anything in ISR
-				parsingPending = true; 
-				
-				
-				
-			}	
-			else if(received == BACKSPACE) //*******************************************this should not be here, should be handled in parser */
-			{
-				if (ptrCount > 0)
-				{
-					ptrCount--;
-					cliMsg[ptrCount] = NULL; 
-				}
-			}
-			
-			/*	if we have NOT reached the delimiter then increment the pointer and pointer counter
-			 *	so the next byte is stored at the next location hence assembling the message\
-			 *	*/
-			else 
-			{
-				cliMsg[ptrCount] = received; 
-				
-				
-				if (ptrCount < MESSAGE_MAX)
-				{
-				 
-					ptrCount++; //this keeps track of how much we have incremtned the cliMsg index
-				}			
-			}
-		}
-	}//end externalize
+		//if the character receieved is not the delimeter then echo the character
+		if(cli.charReceived != cli.delimeter)
+			USART1->DR = cli.charReceived; 
+		parseChar(&cli);				
+	}
 	
 	
 }//----------------------------------------------------------------
@@ -265,7 +184,7 @@ void cmd_ok_handler(uint8_t num, char *values[])
 //	}
 //	else
 //	{
-		CL_printMsg("\r\nSystem ok! \r\n");
+		CL_printMsg("System ok! \r\n");
 	//}
 }//--------------------------------------------------
 void cmd_add_handler(uint8_t num, char *values[])
@@ -282,7 +201,7 @@ void cmd_add_handler(uint8_t num, char *values[])
 		sum += atoi(values[i]);
 
 	}
-	CL_printMsg("\r\nSum: %d\r\n", sum); 
+	CL_printMsg("Sum: %d\r\n", sum); 
 
 
    
@@ -301,12 +220,12 @@ void cmd_sub_handler(uint8_t num, char *values[])
 		{
 			initial -= atoi(values[i]);
 		}
-		CL_printMsg("\r\nDifference = %d\r\n", initial);
+		CL_printMsg("Difference = %d\r\n", initial);
 	}
 	else
 	{
 
-		CL_printMsg("\r\nError! Two numbers needed to subtract\r\n");
+		CL_printMsg("Error! Two numbers needed to subtract\r\n");
 	}
 }//--------------------------------------------------
 void cmd_test_var_handler(uint8_t num, char *values[])
@@ -322,24 +241,26 @@ void cmd_test_var_handler(uint8_t num, char *values[])
 void cmd_ledOn_handler(uint8_t num, char *values[])
 {
 	LL_GPIO_SetOutputPin(GPIOG, LL_GPIO_PIN_14);
-	CL_printMsg("\r\n");
+//	CL_printMsg("\r\n");
 
 }
 void cmd_ledOff_handler(uint8_t num, char *values[])
 {
 	LL_GPIO_ResetOutputPin(GPIOG, LL_GPIO_PIN_14);
-	CL_printMsg("\r\n");
+	//CL_printMsg("\r\n");
 
 
 }
 void cmd_ledBlink_handler(uint8_t num, char *values[])
 {
 	blink(atoi(values[0]) , atoi(values[1]) );
-	CL_printMsg("\r\n");
+	//CL_printMsg("\r\n");
 
 
 }
-void cmd_getreg_handler(uint8_t num, char *values[])
+void cmd_getreg_handler(uint8_t num, char *values[])// make this actually print registers 
 {
-	
+	//getreg GPIOA:moder
+	//CL_printMsg("%s : %d\r\n", values[0], values[1]); 
+	printRegister(33);
 }
