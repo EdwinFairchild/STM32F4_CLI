@@ -165,7 +165,7 @@ void USART1_IRQHandler(void)
 		USART1->SR &= ~(USART_SR_RXNE);//clear interrupt
 		
 		//fetch data
-		cli.charReceived = USART1->DR;
+		//cli.charReceived = USART1->DR; //python version does not need to relay the received char
 
 		//if the character receieved is not the delimeter then echo the character
 		if(cli.charReceived != cli.delimeter)
