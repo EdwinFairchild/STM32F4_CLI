@@ -50,11 +50,8 @@ typedef struct  {
 
 
 void uart_init_full_duplex(void);
-//void parseMsg(void);
-//int cliCMD_ok_handler(int argc, char *argv[]);
-//int cliCMD_stas_handler(int argc, char *argv[]);
-//void registerCommnds(uint8_t num_commands, cliCMD_init *command_struct);
-void cmd_exit_handler(uint8_t num, char *values[]);
+
+
 void cmd_ok_handler(uint8_t num, char *values[]);
 void cmd_add_handler(uint8_t num, char *values[]);
 void cmd_sub_handler(uint8_t num, char *values[]);
@@ -64,7 +61,6 @@ void cmd_ledOff_handler(uint8_t num, char *values[]);
 void cmd_ledBlink_handler(uint8_t num, char *values[]);
 void cmd_getreg_handler(uint8_t num, char *values[]);
 //this array of function pointers will hold pointers to all the handler functions
-int(*command_Handlers[NUM_OF_COMMANDS])(int argc, char *argv[]);
 
 
 //------------------------------------------------------------------
@@ -78,26 +74,22 @@ int main(void)
 	initLed();
 	uart_init_full_duplex();
 	CL_printMsg("------Cli init-----\r\n");
-	
-//	newCommand myCommands[10]; 
-//	myCommands[0].command = "ok";
-//	myCommands[0].cmdHandler = cmd_ok_handler;
-//	myCommands[0].help		= "\r\nResturns ok if everything is ok\r\n";
-//	
-//	myCommands[1].command = "ok";
-//	myCommands[1].cmdHandler = cmd_ok_handler;
-//	myCommands[1].help		= "\r\nResturns ok if everything is ok\r\n";
+
 	
 	
-	registerCommand("exit", ' ', cmd_exit_handler, "Exits the cli\r\n");
-	registerCommand("ok", ' ', cmd_ok_handler, "Prints \"ok\" if cli is ok");
-	registerCommand("add", '+', cmd_add_handler, "Add numbers with a + delimeter");
-	registerCommand("sub", '-', cmd_sub_handler, "Subtracts numbers with a - delimeter");
-	registerCommand("modx", ' ', cmd_test_var_handler, "Under construction");
-	registerCommand("ledOn", ' ', cmd_ledOn_handler, "Turns on user LED");
-	registerCommand("ledOff", ' ', cmd_ledOff_handler, "Turns of user LED");
-	registerCommand("ledBlink", ';', cmd_ledBlink_handler, "Blinks user led x times with y delay\r\nusing the following format : ledBlink xy");
-	registerCommand("getReg", ';' , cmd_getreg_handler, "Returns the value of a given register\n\r[Format] getreg GPIOA;hex or (bin)(dec)");
+	CL_cli_init();
+
+	cli.prompt = "eddie>";
+
+
+	cli.registerCommand("ok", ' ', cmd_ok_handler, "Prints \"ok\" if cli is ok");
+	cli.registerCommand("add", '+', cmd_add_handler, "Add numbers with a + delimeter");
+	cli.registerCommand("sub", '-', cmd_sub_handler, "Subtracts numbers with a - delimeter");
+	cli.registerCommand("modx", ' ', cmd_test_var_handler, "Under construction");
+	cli.registerCommand("ledOn", ' ', cmd_ledOn_handler, "Turns on user LED");
+	cli.registerCommand("ledOff", ' ', cmd_ledOff_handler, "Turns of user LED");
+	cli.registerCommand("ledBlink", ';', cmd_ledBlink_handler, "Blinks user led x times with y delay\r\nusing the following format : ledBlink xy");
+	cli.registerCommand("getReg", ';', cmd_getreg_handler, "Returns the value of a given register\n\r[Format] getreg GPIOA;hex or (bin)(dec)");
 	
 	
 	
@@ -111,6 +103,7 @@ int main(void)
 	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 	while (1)
 	{
+	
 		
 		if (parsingPending == true)
 		{
@@ -193,12 +186,16 @@ void USART1_IRQHandler(void)
 		//fetch data
 		char received = USART1->DR;
 		
-		
+
+
+		cli.charReceived = true;
+		//--------------------------------------------------------------------------------externalize
 		//*******optional**********************/
 		//send the char back to look like a real terminal (putty compatibility)
 		if(received != DELIMETER || received !=  DELIMETER1 ) 
-			USART1->DR = received;
+		USART1->DR = received;
 		//CL_printMsg("%d", received);
+		
 		
 		
 		/*	If parsingPending is already true then it means a message is still
@@ -231,7 +228,7 @@ void USART1_IRQHandler(void)
 				
 				
 			}	
-			else if(received == BACKSPACE)
+			else if(received == BACKSPACE) //*******************************************this should not be here, should be handled in parser */
 			{
 				if (ptrCount > 0)
 				{
@@ -255,15 +252,10 @@ void USART1_IRQHandler(void)
 				}			
 			}
 		}
-	}
+	}//end externalize
 	
 	
 }//----------------------------------------------------------------
-void cmd_exit_handler(uint8_t num, char *values[])
-{
-	CL_printMsg("..................| End CLI |..................\n\n");
-	//CLI_ACTIVE = false;
-}//--------------------------------------------------
 void cmd_ok_handler(uint8_t num, char *values[])
 {
 //	******figure out how to handle help messages
