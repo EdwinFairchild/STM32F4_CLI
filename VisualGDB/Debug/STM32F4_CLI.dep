@@ -59,8 +59,7 @@ VisualGDB/Debug/STM32F4_CLI.o: STM32F4_CLI.c \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\sys\_pthreadtypes.h \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\sys\sched.h \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\machine\types.h \
- c:\sysgcc\arm-eabi\arm-none-eabi\include\sys\stdio.h \
- f:\stm32_comm_libs\cl_bfp.h
+ c:\sysgcc\arm-eabi\arm-none-eabi\include\sys\stdio.h cli_python_host.h
 
 C:/Users/amaya/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32F4xxxx/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_bus.h:
 
@@ -186,4 +185,4 @@ c:\sysgcc\arm-eabi\arm-none-eabi\include\machine\types.h:
 
 c:\sysgcc\arm-eabi\arm-none-eabi\include\sys\stdio.h:
 
-f:\stm32_comm_libs\cl_bfp.h:
+cli_python_host.h:

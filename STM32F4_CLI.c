@@ -20,8 +20,8 @@
 #include "CL_delay.h"
 #include "CL_systemClockUpdate.h"
 #include "CL_printMsg.h"
-#include "CL_bfp.h"
-
+//#include "CL_bfp.h"
+#include "cli_python_host.h"
 //-------------------| Defines |------------------------------------
 
 
@@ -69,7 +69,7 @@ int main(void)
 	
 	CL_cli_init(&cli);
 	cli.prompt = "eddie>";
-	cli.delimeter = '\r';
+	cli.delimeter = '\n';
 
 
 
@@ -165,11 +165,15 @@ void USART1_IRQHandler(void)
 		USART1->SR &= ~(USART_SR_RXNE);//clear interrupt
 		
 		//fetch data
-		//cli.charReceived = USART1->DR; //python version does not need to relay the received char
+		//python version does not need to relay the received char
+		cli.charReceived = USART1->DR; 
 
 		//if the character receieved is not the delimeter then echo the character
-		if(cli.charReceived != cli.delimeter)
-			USART1->DR = cli.charReceived; 
+		//NOT NEEDED IN PYTHON VERSION
+
+
+//		if(cli.charReceived != cli.delimeter)
+//			USART1->DR = cli.charReceived; 
 		parseChar(&cli);				
 	}
 	
@@ -184,7 +188,7 @@ void cmd_ok_handler(uint8_t num, char *values[])
 //	}
 //	else
 //	{
-		CL_printMsg("System ok! \r\n");
+		CL_printMsg("System ok!");
 	//}
 }//--------------------------------------------------
 void cmd_add_handler(uint8_t num, char *values[])

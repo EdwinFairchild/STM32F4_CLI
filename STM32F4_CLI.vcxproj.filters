@@ -210,7 +210,7 @@
     <ClCompile Include="..\..\STM32_COMM_LIBS\CL_delay.c">
       <Filter>Source files\CL_libs</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\STM32_COMM_LIBS\CL_bfp.c">
+    <ClCompile Include="cli_python_host.c">
       <Filter>Source files\CL_libs</Filter>
     </ClCompile>
   </ItemGroup>
@@ -227,7 +227,7 @@
     <ClInclude Include="..\..\STM32_COMM_LIBS\CL_CONFIG.h">
       <Filter>Header files\CL_libs</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\STM32_COMM_LIBS\CL_bfp.h">
+    <ClInclude Include="cli_python_host.h">
       <Filter>Header files\CL_libs</Filter>
     </ClInclude>
   </ItemGroup>

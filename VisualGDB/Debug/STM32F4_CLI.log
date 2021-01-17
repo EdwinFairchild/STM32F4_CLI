@@ -1,1 +1,14 @@
-﻿
+﻿  cli_python_host.c
+  F:\STM32F4\STM32F4_CLI\cli_python_host.c(0): note : In function 'parseChar'
+F:\STM32F4\STM32F4_CLI\cli_python_host.c(80,29): warning : assignment to 'char' from 'void *' makes integer from pointer without a cast
+     81 |     cli->cliMsg[cli->msgPtr] = NULL;
+        |                              ^
+  F:\STM32F4\STM32F4_CLI\cli_python_host.c(0): note : In function 'parseCMD'
+F:\STM32F4\STM32F4_CLI\cli_python_host.c(207,20): warning : assignment to 'char' from 'void *' makes integer from pointer without a cast
+    208 |      cli->cliMsg[i] =  NULL;
+        |                     ^
+  Linking VisualGDB/Debug/STM32F4_CLI...
+  ------------------- Memory utilization report -------------------
+  Used FLASH: 15KB out of 2048KB (0%) [-44]
+  Used SRAM: 436 bytes out of 192KB (0%)
+  Used CCMRAM: 0 bytes out of 64KB (0%)

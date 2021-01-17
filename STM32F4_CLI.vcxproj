@@ -65,10 +65,10 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\STM32_COMM_LIBS\CL_bfp.c" />
     <ClCompile Include="..\..\STM32_COMM_LIBS\CL_delay.c" />
     <ClCompile Include="..\..\STM32_COMM_LIBS\CL_printMsg.c" />
     <ClCompile Include="..\..\STM32_COMM_LIBS\CL_systemClockUpdate.c" />
+    <ClCompile Include="cli_python_host.c" />
     <ClCompile Include="STM32F4_CLI.c" />
     <ClCompile Include="system_stm32f4xx.c" />
     <None Include="stm32.props" />
@@ -94,11 +94,11 @@
     <ClCompile Include="$(BSP_ROOT)\STM32F4xxxx\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_tim.c" />
     <ClCompile Include="$(BSP_ROOT)\STM32F4xxxx\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_usart.c" />
     <ClCompile Include="$(BSP_ROOT)\STM32F4xxxx\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_utils.c" />
-    <ClInclude Include="..\..\STM32_COMM_LIBS\CL_bfp.h" />
     <ClInclude Include="..\..\STM32_COMM_LIBS\CL_CONFIG.h" />
     <ClInclude Include="..\..\STM32_COMM_LIBS\CL_delay.h" />
     <ClInclude Include="..\..\STM32_COMM_LIBS\CL_printMsg.h" />
     <ClInclude Include="..\..\STM32_COMM_LIBS\CL_systemClockUpdate.h" />
+    <ClInclude Include="cli_python_host.h" />
     <ClInclude Include="stm32f4xx_hal_conf.h" />
     <ClInclude Include="$(BSP_ROOT)\STM32F4xxxx\STM32F4xx_HAL_Driver\Inc\stm32f4xx_ll_adc.h" />
     <ClInclude Include="$(BSP_ROOT)\STM32F4xxxx\STM32F4xx_HAL_Driver\Inc\stm32f4xx_ll_bus.h" />

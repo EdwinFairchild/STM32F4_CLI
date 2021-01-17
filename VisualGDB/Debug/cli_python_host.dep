@@ -1,5 +1,5 @@
-VisualGDB/Debug/_2_/STM32_COMM_LIBS/CL_bfp.o: F:/STM32_COMM_LIBS/CL_bfp.c \
- F:/STM32_COMM_LIBS/CL_bfp.h F:/STM32_COMM_LIBS/CL_CONFIG.h \
+VisualGDB/Debug/cli_python_host.o: cli_python_host.c cli_python_host.h \
+ f:\stm32_comm_libs\cl_config.h \
  c:\sysgcc\arm-eabi\lib\gcc\arm-none-eabi\9.3.1\include\stdint.h \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\stdint.h \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\machine\_default_types.h \
@@ -23,7 +23,8 @@ VisualGDB/Debug/_2_/STM32_COMM_LIBS/CL_bfp.o: F:/STM32_COMM_LIBS/CL_bfp.c \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\sys\_locale.h \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\strings.h \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\sys\string.h \
- F:/STM32_COMM_LIBS/CL_printMsg.h \
+ f:\stm32_comm_libs\cl_bfp.h f:\stm32_comm_libs\cl_printmsg.h \
+ f:\stm32_comm_libs\CL_CONFIG.h \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\stdio.h \
  c:\sysgcc\arm-eabi\lib\gcc\arm-none-eabi\9.3.1\include\stdarg.h \
  c:\sysgcc\arm-eabi\arm-none-eabi\include\sys\types.h \
@@ -47,9 +48,9 @@ VisualGDB/Debug/_2_/STM32_COMM_LIBS/CL_bfp.o: F:/STM32_COMM_LIBS/CL_bfp.c \
  C:/Users/amaya/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32F4xxxx/CMSIS_HAL/Core/Include/mpu_armv7.h \
  C:/Users/amaya/AppData/Local/VisualGDB/EmbeddedBSPs/arm-eabi/com.sysprogs.arm.stm32/STM32F4xxxx/CMSIS_HAL/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 
-F:/STM32_COMM_LIBS/CL_bfp.h:
+cli_python_host.h:
 
-F:/STM32_COMM_LIBS/CL_CONFIG.h:
+f:\stm32_comm_libs\cl_config.h:
 
 c:\sysgcc\arm-eabi\lib\gcc\arm-none-eabi\9.3.1\include\stdint.h:
 
@@ -97,7 +98,11 @@ c:\sysgcc\arm-eabi\arm-none-eabi\include\strings.h:
 
 c:\sysgcc\arm-eabi\arm-none-eabi\include\sys\string.h:
 
-F:/STM32_COMM_LIBS/CL_printMsg.h:
+f:\stm32_comm_libs\cl_bfp.h:
+
+f:\stm32_comm_libs\cl_printmsg.h:
+
+f:\stm32_comm_libs\CL_CONFIG.h:
 
 c:\sysgcc\arm-eabi\arm-none-eabi\include\stdio.h:
 
